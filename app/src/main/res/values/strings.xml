@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">CARO LINE AI</string>
+    <string name="jarvis_subheading">Just A Rather Very Intelligent System</string>
+    <string name="status_ready">READY, SIR.</string>
+    <string name="status_listening">LISTENING...</string>
+    <string name="status_thinking">PROCESSING PROTOCOLS...</string>
+    <string name="status_speaking">TRANSMITTING VOICE...</string>
+    <string name="status_offline">OFFLINE DEFENSE MODE ACTIVE</string>
+    <string name="status_online">ONLINE QUANTUM LINK SYNCHRONIZED</string>
+    <string name="input_placeholder">Type your command, sir...</string>
+    <string name="action_capabilities">Capabilities</string>
+    <string name="action_tasks">My Tasks</string>
+    <string name="action_status">Status</string>
+    <string name="nav_jarvis">JARVIS</string>
+    <string name="nav_history">History</string>
+    <string name="nav_settings">Settings</string>
+</resources>

@@ -1,0 +1,6 @@
+{
+  "name": "CARO LINE AI",
+  "description": "Futuristic personal AI assistant inspired by JARVIS with voice recognition, multilingual offline/online commands, system integrations, and high-tech HUD controls.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
