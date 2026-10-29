@@ -4,13 +4,12 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ai.AiAssistantEngine
+import com.example.carolineai.CaroVoiceManager
 import com.example.commands.LocalCommandParser
 import com.example.commands.SystemActionController
 import com.example.data.local.AppDatabase
 import com.example.data.model.ChatMessage
-import com.example.voice.SpeechRecognizerManager
 import com.example.voice.TextToSpeechManager
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -65,18 +64,70 @@ class JarvisViewModel(application: Application) : AndroidViewModel(application) 
 
     val isSpeaking = ttsManager.isSpeaking
 
-    private var speechManager: SpeechRecognizerManager? = null
-
     private val _isListening = MutableStateFlow(false)
     val isListening: StateFlow<Boolean> = _isListening.asStateFlow()
 
     private val _audioLevel = MutableStateFlow(0f)
     val audioLevel: StateFlow<Float> = _audioLevel.asStateFlow()
 
-    private var speechLevelCollectorJob: Job? = null
+    private val voiceListener = object : CaroVoiceManager.VoiceListener {
+        override fun onReadyForSpeech() {
+            _status.value = AssistantStatus.LISTENING
+            _isListening.value = true
+        }
+
+        override fun onBeginningOfSpeech() {
+            _status.value = AssistantStatus.LISTENING
+            _isListening.value = true
+        }
+
+        override fun onRmsdBChanged(rmsdB: Float) {
+            val normalized = ((rmsdB + 2f) / 12f).coerceIn(0f, 1f)
+            _audioLevel.value = normalized
+        }
+
+        override fun onResults(recognizedText: String) {
+            _isListening.value = false
+            _audioLevel.value = 0f
+            processUserCommand(recognizedText)
+        }
+
+        override fun onError(errorCode: Int, humanReadableMessage: String) {
+            _isListening.value = false
+            _audioLevel.value = 0f
+            _status.value = AssistantStatus.ERROR
+            _lastAssistantReply.value = humanReadableMessage
+
+            // Language fallback mechanism for code 12 (API 33+ language not supported)
+            if (errorCode == 12 && caroVoiceManager.selectedLanguage != CaroVoiceManager.SupportedLanguage.ENGLISH) {
+                caroVoiceManager.selectedLanguage = CaroVoiceManager.SupportedLanguage.ENGLISH
+                _currentLanguage.value = "en"
+            }
+
+            viewModelScope.launch {
+                delay(4000)
+                if (_status.value == AssistantStatus.ERROR) {
+                    _status.value = AssistantStatus.READY
+                }
+            }
+        }
+
+        override fun onStateChanged(isListening: Boolean) {
+            _isListening.value = isListening
+            if (isListening) {
+                _status.value = AssistantStatus.LISTENING
+            } else if (_status.value == AssistantStatus.LISTENING) {
+                _status.value = AssistantStatus.READY
+                _audioLevel.value = 0f
+            }
+        }
+    }
+
+    val caroVoiceManager: CaroVoiceManager = CaroVoiceManager(application, voiceListener).apply {
+        initialize()
+    }
 
     init {
-        initSpeechRecognizer()
         refreshDiagnostics()
         // Listen to TTS speaking state
         viewModelScope.launch {
@@ -87,50 +138,6 @@ class JarvisViewModel(application: Application) : AndroidViewModel(application) 
                 } else if (_status.value == AssistantStatus.SPEAKING) {
                     _status.value = AssistantStatus.READY
                     _audioLevel.value = 0f
-                }
-            }
-        }
-    }
-
-    private fun initSpeechRecognizer() {
-        speechManager = SpeechRecognizerManager(
-            context = getApplication(),
-            onResultReceived = { recognizedText ->
-                _isListening.value = false
-                processUserCommand(recognizedText)
-            },
-            onErrorReceived = { errorMessage ->
-                _isListening.value = false
-                _status.value = AssistantStatus.ERROR
-                _lastAssistantReply.value = errorMessage
-                viewModelScope.launch {
-                    delay(3000)
-                    if (_status.value == AssistantStatus.ERROR) {
-                        _status.value = AssistantStatus.READY
-                    }
-                }
-            }
-        )
-
-        speechLevelCollectorJob?.cancel()
-        speechLevelCollectorJob = viewModelScope.launch {
-            speechManager?.let { sm ->
-                launch {
-                    sm.isListening.collect { listening ->
-                        _isListening.value = listening
-                        if (listening) {
-                            _status.value = AssistantStatus.LISTENING
-                        } else if (_status.value == AssistantStatus.LISTENING) {
-                            _status.value = AssistantStatus.READY
-                        }
-                    }
-                }
-                launch {
-                    sm.rmsLevel.collect { level ->
-                        if (_isListening.value) {
-                            _audioLevel.value = level
-                        }
-                    }
                 }
             }
         }
@@ -147,13 +154,12 @@ class JarvisViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun toggleListening() {
-        if (_isListening.value) {
-            speechManager?.stopListening()
-            _isListening.value = false
+        if (caroVoiceManager.isListening) {
+            caroVoiceManager.stopListening()
             _status.value = AssistantStatus.READY
         } else {
             ttsManager.stop()
-            speechManager?.startListening(_currentLanguage.value)
+            caroVoiceManager.startListening()
         }
     }
 
@@ -212,6 +218,11 @@ class JarvisViewModel(application: Application) : AndroidViewModel(application) 
     fun setLanguage(lang: String) {
         _currentLanguage.value = lang
         ttsManager.setLanguage(lang)
+        caroVoiceManager.selectedLanguage = when (lang.lowercase()) {
+            "hi", "hinglish" -> CaroVoiceManager.SupportedLanguage.HINDI
+            "bn" -> CaroVoiceManager.SupportedLanguage.BENGALI
+            else -> CaroVoiceManager.SupportedLanguage.ENGLISH
+        }
     }
 
     fun toggleForceOffline() {
@@ -239,7 +250,7 @@ class JarvisViewModel(application: Application) : AndroidViewModel(application) 
 
     override fun onCleared() {
         super.onCleared()
-        speechManager?.destroy()
+        caroVoiceManager.destroy()
         ttsManager.shutdown()
     }
 }

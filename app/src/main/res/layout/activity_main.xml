@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#060B14"
+    android:fitsSystemWindows="true">
+
+    <!-- Top J.A.R.V.I.S. Header -->
+    <LinearLayout
+        android:id="@+id/headerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingTop="28dp"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/orbitron"
+            android:letterSpacing="0.25"
+            android:text="J.A.R.V.I.S."
+            android:textColor="#00E5FF"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/rajdhani"
+            android:text="Just A Rather Very Intelligent System"
+            android:textColor="#8B9CB5"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- Center Radar Container & Status -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottomBarContainer"
+        android:layout_below="@id/headerContainer"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <!-- Radar Container (decibel alpha-scaled) -->
+        <FrameLayout
+            android:id="@+id/radarContainer"
+            android:layout_width="260dp"
+            android:layout_height="260dp"
+            android:alpha="0.4"
+            android:background="@drawable/bg_radar_circles" />
+
+        <!-- Status Text -->
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:fontFamily="@font/orbitron"
+            android:letterSpacing="0.15"
+            android:text="READY, SIR."
+            android:textColor="#00E5FF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <!-- Error / Anomaly Message -->
+        <TextView
+            android:id="@+id/tvErrorMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="24dp"
+            android:fontFamily="@font/rajdhani"
+            android:gravity="center"
+            android:textColor="#FF5252"
+            android:textSize="13sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- Bottom Command Input Bar -->
+    <LinearLayout
+        android:id="@+id/bottomBarContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/etCommandInput"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input_field"
+                android:fontFamily="@font/rajdhani"
+                android:hint="Type your command, sir..."
+                android:imeOptions="actionSend"
+                android:inputType="text"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textColor="#F0F6FC"
+                android:textColorHint="#8B9CB5"
+                android:textSize="14sp" />
+
+            <ImageButton
+                android:id="@+id/btnMic"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_cyan_button"
+                android:contentDescription="Voice Input"
+                android:src="@drawable/ic_mic" />
+
+            <Button
+                android:id="@+id/btnSend"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_cyan_button"
+                android:contentDescription="Send"
+                android:drawableStart="@drawable/ic_send"
+                android:paddingStart="12dp"
+                android:paddingEnd="0dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

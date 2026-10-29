@@ -2,19 +2,22 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Normal permissions -->
+    <!-- Permissions required for SpeechRecognizer and network processing -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
-
-    <!-- Runtime permissions for Voice, Camera/Flashlight, and Notifications -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- Package visibility queries for opening apps -->
+    <!-- Mandatory for Android 11 (API 30)+: Grants visibility to speech recognition engines & apps -->
     <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+        <package android:name="com.google.android.googlequicksearchbox" />
+        <package android:name="com.google.android.tts" />
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="https" />
@@ -34,16 +37,15 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="CARO LINE AI"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MyApplication">
+        android:theme="@style/Theme.CaroLineAI">
+
         <activity
-            android:name=".MainActivity"
+            android:name=".carolineai.MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.MyApplication">
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

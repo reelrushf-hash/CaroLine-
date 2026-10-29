@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="260dp"
+    android:height="260dp"
+    android:viewportWidth="260"
+    android:viewportHeight="260">
+    <!-- Outer concentric ring -->
+    <path
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="1.5"
+        android:strokeAlpha="0.3"
+        android:pathData="M130,130m-110,0a110,110 0,1,1 220,0a110,110 0,1,1 -220,0" />
+    <!-- Middle ring -->
+    <path
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="2"
+        android:strokeAlpha="0.5"
+        android:pathData="M130,130m-80,0a80,80 0,1,1 160,0a80,80 0,1,1 -160,0" />
+    <!-- Inner ring -->
+    <path
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="2.5"
+        android:strokeAlpha="0.8"
+        android:pathData="M130,130m-50,0a50,50 0,1,1 100,0a50,50 0,1,1 -100,0" />
+    <!-- Glowing core -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M130,130m-14,0a14,14 0,1,1 28,0a14,14 0,1,1 -28,0" />
+    <!-- Center white spark -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M130,130m-6,0a6,6 0,1,1 12,0a6,6 0,1,1 -12,0" />
+</vector>
